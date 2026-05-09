@@ -7,10 +7,28 @@ from app.core.config import settings
 
 def create_event(creator_id: str, data: EventCreate) -> dict:
     db = get_db()
-    member = db.table("group_members").select("user_id").eq("group_id", data.group_id).eq("user_id", creator_id).execute()
-    if not member.data:
-        raise HTTPException(status_code=403, detail="Not a group member")
-    row = {"group_id": data.group_id, "creator_id": creator_id, "title": data.title, "location_name": data.location_name, "lat": data.lat, "lng": data.lng, "starts_at": data.starts_at.isoformat(), "status": "planned"}
+    
+    if data.group_id:
+        member = (
+            db.table("group_members")
+            .select("user_id")
+            .eq("group_id", data.group_id)
+            .eq("user_id", creator_id)
+            .execute()
+        )
+        if not member.data:
+            raise HTTPException(status_code=403, detail="Not a group member")
+
+    row = {
+        "group_id": data.group_id,
+        "creator_id": creator_id,
+        "title": data.title,
+        "location_name": data.location_name,
+        "lat": data.lat,
+        "lng": data.lng,
+        "starts_at": data.starts_at.isoformat(),
+        "status": "planned",
+    }
     return db.table("events").insert(row).execute().data[0]
 
 def get_group_events(group_id: str) -> list:

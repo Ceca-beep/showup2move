@@ -8,6 +8,8 @@ def update_profile(user_id: str, data: UserProfileUpdate) -> dict:
     updates = data.model_dump(exclude_none=True)
     if not updates:
         raise HTTPException(status_code=400, detail="No fields to update")
+    if "skill_level" in updates:
+        updates["skill_level"] = updates["skill_level"].lower()
     result = db.table("users").update(updates).eq("id", user_id).execute()
     if not result.data:
         raise HTTPException(status_code=404, detail="User not found")

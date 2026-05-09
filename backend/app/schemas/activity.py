@@ -17,7 +17,7 @@ class GroupOut(BaseModel):
     created_at: datetime
 
 class EventCreate(BaseModel):
-    group_id: str
+    group_id: Optional[str] = None
     title: str
     location_name: str
     lat: Optional[float] = None
